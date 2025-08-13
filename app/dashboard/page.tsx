@@ -11,6 +11,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (status === "loading") return; // Still loading
+    console.log("Session:", session);
     if (!session) router.push("/auth/signin"); // Not authenticated
   }, [session, status, router]);
 
@@ -23,8 +24,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">

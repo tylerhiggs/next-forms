@@ -4,6 +4,9 @@ import { signIn, getProviders } from "next-auth/react";
 import { useEffect, useState } from "react";
 import type { ClientSafeProvider, LiteralUnion } from "next-auth/react";
 import type { BuiltInProviderType } from "next-auth/providers/index";
+import { Button } from "@/components/ui/button";
+import GoogleButton from "@/components/GoogleButton";
+import Image from "next/image";
 
 type Providers = Record<
   LiteralUnion<BuiltInProviderType, string>,
@@ -26,26 +29,45 @@ export default function SignIn() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="max-w-sm w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold">
             Sign in to Next Forms
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-muted-foreground">
             Choose your preferred sign-in method
           </p>
         </div>
-        <div className="space-y-4">
-          {Object.values(providers).map((provider) => (
-            <button
-              key={provider.name}
-              onClick={() => signIn(provider.id, { callbackUrl: "/" })}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Sign in with {provider.name}
-            </button>
-          ))}
+        <div className="space-y-4 flex flex-col items-center">
+          {Object.values(providers).map((provider) =>
+            provider.name === "Google" ? (
+              <GoogleButton
+                key={provider.name}
+                onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+              />
+            ) : (
+              <Button
+                variant="outline"
+                className="w-full rounded-full flex space-between"
+                key={provider.name}
+                onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+              >
+                {provider.name === "GitHub" && (
+                  <Image
+                    src="../github-mark.svg"
+                    alt="GitHub"
+                    className="inline h-5 w-5 align-middle dark:invert"
+                    height={20}
+                    width={20}
+                  />
+                )}
+                <div className="flex-grow text-center">
+                  Sign in with {provider.name}
+                </div>
+              </Button>
+            )
+          )}
         </div>
       </div>
     </div>
