@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next Forms
 
-## Getting Started
+A modern form builder application built with Next.js 15, NextAuth.js, Drizzle ORM, and Neon PostgreSQL.
 
-First, run the development server:
+## Features
+
+- 🔐 **Authentication**: Secure authentication with NextAuth.js supporting Google and GitHub providers
+- 📊 **Database**: PostgreSQL with Neon serverless database
+- 🛠️ **Type-safe ORM**: Drizzle ORM for type-safe database operations
+- 🎨 **Modern UI**: Built with Tailwind CSS
+- ⚡ **Fast Development**: Powered by Turbopack for fast refresh
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Authentication**: NextAuth.js v4
+- **Database**: Neon PostgreSQL
+- **ORM**: Drizzle ORM
+- **Styling**: Tailwind CSS
+- **Language**: TypeScript
+- **Package Manager**: Bun
+
+## Prerequisites
+
+- Bun >= 1.0
+- Node.js >= 18
+- A Neon database account
+- OAuth app credentials (Google and/or GitHub)
+
+## Running the Application
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Development
+bun run dev
+
+# Production build
+bun run build
+bun run start
+
+# Lint
+bun run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Database Commands
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Generate new migrations after schema changes
+bun run db:generate
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Apply migrations to database
+bun run db:migrate
 
-## Learn More
+# Push schema changes directly (development only)
+bun run db:push
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes
+│   ├── auth/              # Authentication pages
+│   ├── dashboard/         # Protected dashboard
+│   └── ...
+├── components/            # React components
+│   ├── ui/               # UI components
+│   └── ...
+├── lib/                  # Utility functions
+├── src/                  # Source code
+│   └── db/               # Database schema and config
+├── types/                # TypeScript type definitions
+└── migrations/           # Database migrations
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Authentication Features
 
-## Deploy on Vercel
+- ✅ Google OAuth login
+- ✅ GitHub OAuth login
+- ✅ Protected routes with middleware
+- ✅ Session management
+- ✅ User profile display
+- ✅ Automatic redirects for unauthenticated users
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Next Steps
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Create form builder interface
+- Add form submission handling
+- Implement form analytics
