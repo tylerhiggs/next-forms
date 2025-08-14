@@ -94,7 +94,7 @@ export const authenticators = pgTable(
 
 // Form tables
 export const form = pgTable("form", {
-  id: integer("id").primaryKey(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   title: text("title").notNull(),
   userId: text("user_id")
     .references(() => users.id)
@@ -110,7 +110,7 @@ export const fieldTypeEnum = pgEnum("field_type", [
 ]);
 
 export const formField = pgTable("form_field", {
-  id: integer("id").primaryKey(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   formId: integer("form_id")
     .references(() => form.id)
     .notNull(),
@@ -122,7 +122,7 @@ export const formField = pgTable("form_field", {
 });
 
 export const formSubmission = pgTable("form_submission", {
-  id: integer("id").primaryKey(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   formId: integer("form_id")
     .references(() => form.id)
     .notNull(),
@@ -130,7 +130,7 @@ export const formSubmission = pgTable("form_submission", {
 });
 
 export const fieldAnswer = pgTable("field_answer", {
-  id: integer("id").primaryKey(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   submissionId: integer("submission_id")
     .references(() => formSubmission.id)
     .notNull(),
