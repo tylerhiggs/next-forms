@@ -7,7 +7,7 @@ import { authOptions } from "../../lib/auth";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 
-export const createForm = async () => {
+export const createForm = async (isPublic = false) => {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -19,6 +19,7 @@ export const createForm = async () => {
     .values({
       title: "Untitled Form",
       userId: session.user.id,
+      isPublic,
     })
     .returning();
 

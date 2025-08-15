@@ -8,6 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { pgEnum } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "@auth/core/adapters";
+import { desc } from "drizzle-orm";
 
 export const users = pgTable("user", {
   id: text("id")
@@ -96,9 +97,11 @@ export const authenticators = pgTable(
 export const form = pgTable("form", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   title: text("title").notNull(),
+  description: text("description"),
   userId: text("user_id")
     .references(() => users.id)
     .notNull(),
+  isPublic: boolean("is_public").default(false),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
 });
 export const fieldTypeEnum = pgEnum("field_type", [

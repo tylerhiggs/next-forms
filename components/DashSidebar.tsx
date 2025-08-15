@@ -2,20 +2,24 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarHeader,
+  SidebarMenu,
 } from "@/components/ui/sidebar";
 import { ProfileSidebarHeader } from "./ProfileSidebarHeader";
+import { getUserForms } from "@/src/actions/forms";
+import { SidebarFormsContent } from "./SidebarFormsContent";
 
-export function DashboardSidebar() {
+export async function DashboardSidebar() {
+  const forms = await getUserForms();
   return (
     <Sidebar>
       <SidebarHeader>
-        <ProfileSidebarHeader />
+        <SidebarMenu>
+          <ProfileSidebarHeader />
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup />
-        <SidebarGroup />
+        <SidebarFormsContent forms={forms} />
       </SidebarContent>
       <SidebarFooter />
     </Sidebar>
