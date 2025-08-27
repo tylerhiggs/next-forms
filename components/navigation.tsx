@@ -25,12 +25,9 @@ export default function Navigation() {
                 <span className="text-muted-foreground">
                   Welcome, {session.user?.name || session.user?.email}
                 </span>
-                <Link
-                  href="/dashboard"
-                  className="text-muted-foreground hover:text-gray-900"
-                >
+                <Button href="/dashboard" variant="ghost">
                   Dashboard
-                </Link>
+                </Button>
                 <Button variant="destructive" onClick={() => signOut()}>
                   Sign Out
                 </Button>

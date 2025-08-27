@@ -1,7 +1,7 @@
 "use client";
 
 import { createForm, getUserForms } from "@/src/actions/forms";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   SidebarGroup,
   SidebarGroupAction,
@@ -14,6 +14,7 @@ import {
 import { Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { formContext } from "@/app/providers/form-provider";
 
 export const SidebarFormsContent = ({
   forms: originalForms,
@@ -21,6 +22,7 @@ export const SidebarFormsContent = ({
   forms: Awaited<ReturnType<typeof getUserForms>>;
 }) => {
   const path = usePathname();
+  const { currentTitle } = useContext(formContext);
   const id = Number(path.split("/").pop());
   const router = useRouter();
   const [forms, setForms] = useState(originalForms);
@@ -35,35 +37,42 @@ export const SidebarFormsContent = ({
     },
     [[], []] as [typeof forms, typeof forms]
   );
+  useEffect(() => {
+    console.log(currentTitle, "<SidebarFormsContent />");
+  }, [currentTitle]);
   return (
     <>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            onClick={() => {
-              const tempId = Date.now(); // Temporary ID for optimistic UI
-              const tempForm: (typeof forms)[0] = {
-                id: tempId,
-                title: "Untitled Form",
-                description: "",
-                userId: "", // Will be filled in by the server
-                isPublic: false,
-                createdAt: new Date(),
-              };
-              setForms((prev) => [...prev, tempForm]);
-              createForm().then((newForm) => {
-                setForms((prev) =>
-                  prev.map((form) => (form.id === tempId ? newForm : form))
-                );
-                router.push(`/dashboard/${newForm.id}`);
-              });
-            }}
-            className="flex items-center justify-between"
-          >
-            Add New Form <Plus />
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
+      <SidebarGroup>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => {
+                  const tempId = Date.now(); // Temporary ID for optimistic UI
+                  const tempForm: (typeof forms)[0] = {
+                    id: tempId,
+                    title: "Untitled Form",
+                    description: "",
+                    userId: "", // Will be filled in by the server
+                    isPublic: false,
+                    createdAt: new Date(),
+                  };
+                  setForms((prev) => [...prev, tempForm]);
+                  createForm().then((newForm) => {
+                    setForms((prev) =>
+                      prev.map((form) => (form.id === tempId ? newForm : form))
+                    );
+                    router.push(`/dashboard/${newForm.id}`);
+                  });
+                }}
+                className="flex items-center justify-between"
+              >
+                Add New Form <Plus />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
       {publicForms.length > 0 && (
         <SidebarGroup>
           <SidebarGroupLabel>Public</SidebarGroupLabel>
@@ -76,7 +85,9 @@ export const SidebarFormsContent = ({
                 <SidebarMenuItem key={form.id}>
                   <Link href={`/dashboard/${form.id}`}>
                     <SidebarMenuButton isActive={form.id === id}>
-                      {form.title}
+                      {form.id === id && currentTitle
+                        ? currentTitle
+                        : form.title}
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
@@ -97,7 +108,9 @@ export const SidebarFormsContent = ({
                 <SidebarMenuItem key={form.id}>
                   <Link href={`/dashboard/${form.id}`}>
                     <SidebarMenuButton isActive={form.id === id}>
-                      {form.title}
+                      {form.id === id && currentTitle
+                        ? currentTitle
+                        : form.title}
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>

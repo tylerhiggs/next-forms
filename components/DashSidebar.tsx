@@ -9,7 +9,7 @@ import { ProfileSidebarHeader } from "./ProfileSidebarHeader";
 import { getUserForms } from "@/src/actions/forms";
 import { SidebarFormsContent } from "./SidebarFormsContent";
 
-export async function DashboardSidebar() {
+export const DashboardSidebar = async () => {
   const forms = await getUserForms();
   return (
     <Sidebar>
@@ -24,4 +24,4 @@ export async function DashboardSidebar() {
       <SidebarFooter />
     </Sidebar>
   );
-}
+};

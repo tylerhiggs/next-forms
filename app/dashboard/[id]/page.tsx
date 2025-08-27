@@ -2,8 +2,10 @@ import { getFormById } from "@/src/actions/forms";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/DashSidebar";
 import { cookies } from "next/headers";
+import { FormEditor } from "@/components/FormEditor";
+import { FormProvider } from "@/app/providers/form-provider";
 
-export default async function FormEditor({
+export default async function FormEditorPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -24,13 +26,13 @@ export default async function FormEditor({
     (await cookieStore).get("sidebar_state")?.value === "true";
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <DashboardSidebar />
-      <main className="flex w-full min-h-full">
-        <SidebarTrigger />
-        <div className="flex w-full min-h-full items-center justify-center">
-          <h1 className="text-2xl font-bold">Editing Form: {form.title}</h1>
-        </div>
-      </main>
+      <FormProvider>
+        <DashboardSidebar />
+        <main className="flex w-full min-h-full p-2">
+          <SidebarTrigger />
+          <FormEditor form={form} />
+        </main>
+      </FormProvider>
     </SidebarProvider>
   );
 }
