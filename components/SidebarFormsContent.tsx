@@ -1,7 +1,7 @@
 "use client";
 
 import { createForm, getUserForms } from "@/src/actions/forms";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import {
   SidebarGroup,
   SidebarGroupAction,
@@ -37,9 +37,6 @@ export const SidebarFormsContent = ({
     },
     [[], []] as [typeof forms, typeof forms]
   );
-  useEffect(() => {
-    console.log(currentTitle, "<SidebarFormsContent />");
-  }, [currentTitle]);
   return (
     <>
       <SidebarGroup>

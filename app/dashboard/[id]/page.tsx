@@ -4,7 +4,6 @@ import { DashboardSidebar } from "@/components/DashSidebar";
 import { cookies } from "next/headers";
 import { FormEditor } from "@/components/FormEditor";
 import { FormProvider } from "@/app/providers/form-provider";
-
 export default async function FormEditorPage({
   params,
 }: {

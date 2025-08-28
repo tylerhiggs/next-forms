@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { pgEnum } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "@auth/core/adapters";
-import { desc } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 
 export const users = pgTable("user", {
   id: text("id")
@@ -104,12 +104,20 @@ export const form = pgTable("form", {
   isPublic: boolean("is_public").default(false),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
 });
+
+export const formRelations = relations(form, ({ many }) => ({
+  formFields: many(formField),
+}));
+
 export const fieldTypeEnum = pgEnum("field_type", [
   "text",
   "email",
   "number",
   "select",
   "textarea",
+  "checkbox",
+  "radio",
+  "date",
 ]);
 
 export const formField = pgTable("form_field", {
@@ -117,12 +125,26 @@ export const formField = pgTable("form_field", {
   formId: integer("form_id")
     .references(() => form.id)
     .notNull(),
+  userId: text("user_id")
+    .references(() => users.id)
+    .notNull(),
   label: text("label").notNull(),
   type: fieldTypeEnum("type").notNull(),
   required: boolean("required").default(false),
   options: text("options"), // JSON string for select/radio options
   order: integer("order").notNull(),
+  placeholder: text("placeholder"),
+  defaultValue: text("default_value"),
+  min: integer("min"),
+  max: integer("max"),
 });
+
+export const formFieldRelations = relations(formField, ({ one }) => ({
+  form: one(form, {
+    fields: [formField.formId],
+    references: [form.id],
+  }),
+}));
 
 export const formSubmission = pgTable("form_submission", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
