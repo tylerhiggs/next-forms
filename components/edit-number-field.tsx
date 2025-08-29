@@ -50,11 +50,15 @@ export const EditNumberField = ({
         <div className="flex flex-col gap-2 w-full">
           <Label htmlFor={`default-value-${field.id}`}>Default Value</Label>
 
-          <Input
+          <NumberInput
             id={`default-value-${field.id}`}
-            value={field.defaultValue || ""}
-            onChange={(e) => updateField({ defaultValue: e.target.value })}
-            placeholder="Default value for text input"
+            value={field.defaultValue ? Number(field.defaultValue) : undefined}
+            update={(value) =>
+              updateField({
+                defaultValue: value !== undefined ? `${value}` : undefined,
+              })
+            }
+            placeholder="Default value for number input"
             className="w-full"
           />
         </div>
@@ -65,12 +69,12 @@ export const EditNumberField = ({
             id={`placeholder-${field.id}`}
             value={field.placeholder || ""}
             onChange={(e) => updateField({ placeholder: e.target.value })}
-            placeholder="Placeholder for text input"
+            placeholder="Placeholder for number input"
             className="w-full"
           />
         </div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-1">
         <div className="flex flex-col gap-2 w-full">
           <Label htmlFor={`min-${field.id}`}>Minimum</Label>
           <NumberInput

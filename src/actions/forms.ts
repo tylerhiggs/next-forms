@@ -58,3 +58,23 @@ export const getFormById = async (formId: number) => {
 
   return userForm;
 };
+
+export const updateForm = async (
+  formId: number,
+  updates: Partial<Omit<typeof form.$inferInsert, "userId" | "createdAt">>
+) => {
+  console.log("updates", updates);
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    redirect("/auth/signin");
+  }
+
+  const updatedForm = await db
+    .update(form)
+    .set(updates)
+    .where(and(eq(form.id, formId), eq(form.userId, session.user.id)))
+    .returning();
+
+  return updatedForm[0];
+};

@@ -21,6 +21,14 @@ export const FormTextField = ({
       setErrorMessage("This field is required");
       return;
     }
+    if (
+      field.type === "email" &&
+      e.target.value !== "" &&
+      !/\S+@\S+\.\S+/.test(e.target.value)
+    ) {
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
     setErrorMessage("");
     onChange?.(e.target.value);
   };
@@ -30,6 +38,8 @@ export const FormTextField = ({
       <Input
         id={`${field.id}`}
         value={value}
+        type={field.type === "email" ? "email" : "text"}
+        autoComplete={field.type === "email" ? "email" : "off"}
         onFocus={() => setTouched(true)}
         onChange={change}
         placeholder={field.placeholder || ""}

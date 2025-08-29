@@ -29,7 +29,7 @@ export default async function FormEditorPage({
         <DashboardSidebar />
         <main className="flex w-full min-h-full p-2">
           <SidebarTrigger />
-          <FormEditor form={form} />
+          {form ? <FormEditor form={form} /> : <div>Loading...</div>}
         </main>
       </FormProvider>
     </SidebarProvider>

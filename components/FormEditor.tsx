@@ -1,6 +1,5 @@
 "use client";
 
-import { getFormById } from "@/src/actions/forms";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { formContext } from "@/app/providers/form-provider";
 import { Button } from "./ui/button";
@@ -18,21 +17,35 @@ import {
 import { EditTextField } from "./edit-text-field";
 import { FormPreview } from "./form-preview";
 import { EditNumberField } from "./edit-number-field";
-import type { FormFieldType } from "@/types/forms";
+import type { FormWithFields } from "@/types/forms";
+import { useFormState } from "@/hooks/use-form-state";
+import { EditFormHeader } from "./edit-form-header";
 
-export const FormEditor = ({
-  form,
-}: {
-  form: Awaited<ReturnType<typeof getFormById>>;
-}) => {
-  const { currentTitle, setCurrentTitle } = useContext(formContext);
+export const FormEditor = ({ form }: { form: FormWithFields }) => {
+  const { currentTitle, setCurrentTitle, currentPrivacy, setCurrentPrivacy } =
+    useContext(formContext);
+  const {
+    formState,
+    updateFormState,
+    updateFormField,
+    deleteField,
+    addFormField,
+    isSaved,
+  } = useFormState(form);
+
   useEffect(() => {
     if (!form?.title) return;
     setCurrentTitle(form.title);
-  }, [form?.title, setCurrentTitle]);
+  }, [form.title, setCurrentTitle]);
+
+  useEffect(() => {
+    setCurrentPrivacy(!form.isPublic);
+  }, [form.isPublic, setCurrentPrivacy]);
+
   const updateFormTitle = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
     setCurrentTitle(target.value);
+    updateFormState({ title: target.value });
   };
 
   const [commandOpen, setCommandOpen] = useState(false);
@@ -67,128 +80,107 @@ export const FormEditor = ({
     },
   ];
 
-  const [formState, setFormState] = useState(form);
-  const updateField = (
-    updatedField: Partial<FormFieldType>,
-    field: FormFieldType
-  ) =>
-    setFormState((prev) =>
-      prev
-        ? {
-            ...prev,
-            formFields: prev.formFields.map((f) =>
-              f.id === field.id ? { ...f, ...updatedField } : f
-            ),
-          }
-        : undefined
-    );
-  const deleteField = (field: FormFieldType) =>
-    setFormState((prev) =>
-      prev
-        ? {
-            ...prev,
-            formFields: prev.formFields.filter((f) => f.id !== field.id),
-          }
-        : undefined
-    );
-
   if (!form) {
     return <div>Form not found</div>;
   }
   return (
-    <div className="w-full flex gap-4">
-      <div className="flex flex-col pl-4 gap-4 w-1/2">
-        <div className="flex items-center p-4">
-          <h1 className="w-full">
-            <input
-              value={currentTitle}
-              onChange={updateFormTitle}
-              className="w-full text-4xl font-bold"
-            />
-          </h1>
-        </div>
-        {formState?.formFields?.map((field) => (
-          <div key={field.id}>
-            {field.type === "text" && (
-              <EditTextField
-                field={field}
-                deleteField={() => deleteField(field)}
-                updateField={(updatedField) => updateField(updatedField, field)}
+    <div className="w-full flex flex-col">
+      <EditFormHeader
+        isSaved={isSaved}
+        isPrivate={!formState.isPublic}
+        onPrivacyToggle={() => {
+          updateFormState({ isPublic: !formState.isPublic });
+          setCurrentPrivacy(!currentPrivacy);
+        }}
+      />
+      <div className="w-full flex gap-4">
+        <div className="flex flex-col pl-4 gap-4 w-1/2">
+          <div className="flex items-center p-4">
+            <h1 className="w-full">
+              <input
+                value={currentTitle || form.title}
+                onChange={updateFormTitle}
+                className="w-full text-4xl font-bold"
               />
-            )}
-            {field.type === "number" && (
-              <EditNumberField
-                field={field}
-                updateField={(updatedField) => updateField(updatedField, field)}
-                deleteField={() => deleteField(field)}
-              />
-            )}
+            </h1>
           </div>
-        ))}
-        <div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => setCommandOpen((open) => !open)}
-              >
-                Add Field
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" align="center">
-              <span>
-                Use <Kbd keyName="meta" /> <Kbd keyName="E" /> to open/close
-              </span>
-            </TooltipContent>
-          </Tooltip>
+          {formState?.formFields?.map((field) => (
+            <div key={field.id}>
+              {(field.type === "text" || field.type === "email") && (
+                <EditTextField
+                  field={field}
+                  deleteField={() => deleteField(field.id)}
+                  updateField={(updatedField) =>
+                    updateFormField(field.id, updatedField)
+                  }
+                />
+              )}
+              {field.type === "number" && (
+                <EditNumberField
+                  field={field}
+                  updateField={(updatedField) =>
+                    updateFormField(field.id, updatedField)
+                  }
+                  deleteField={() => deleteField(field.id)}
+                />
+              )}
+            </div>
+          ))}
+          <div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setCommandOpen((open) => !open)}
+                >
+                  Add Field
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" align="center">
+                <span>
+                  Use <Kbd keyName="meta" /> <Kbd keyName="E" /> to open/close
+                </span>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <CommandDialog open={commandOpen} onOpenChange={setCommandOpen}>
+            <CommandInput placeholder="Type a command or search..." />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              {groups.map((group) => (
+                <CommandGroup key={group.name} heading={group.name}>
+                  {group.items.map((item) => (
+                    <CommandItem
+                      key={item.type}
+                      onSelect={() => {
+                        setCommandOpen(false);
+                        addFormField({
+                          id: Date.now(),
+                          label: "",
+                          type: item.type,
+                          order: formState.formFields.length,
+                          required: item.type === "email",
+                          userId: formState.userId,
+                          formId: formState.id,
+                          options: null,
+                          placeholder: "",
+                          defaultValue: "",
+                          min: null,
+                          max: null,
+                        });
+                      }}
+                    >
+                      {item.title}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              ))}
+            </CommandList>
+          </CommandDialog>
         </div>
-        <CommandDialog open={commandOpen} onOpenChange={setCommandOpen}>
-          <CommandInput placeholder="Type a command or search..." />
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            {groups.map((group) => (
-              <CommandGroup key={group.name} heading={group.name}>
-                {group.items.map((item) => (
-                  <CommandItem
-                    key={item.type}
-                    onSelect={() => {
-                      setCommandOpen(false);
-                      setFormState((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              formFields: [
-                                ...prev.formFields,
-                                {
-                                  id: Date.now(),
-                                  label: "",
-                                  type: item.type,
-                                  order: prev.formFields.length,
-                                  required: false,
-                                  userId: prev.userId,
-                                  formId: prev.id,
-                                  options: null,
-                                  placeholder: "",
-                                  defaultValue: "",
-                                  min: null,
-                                  max: null,
-                                },
-                              ],
-                            }
-                          : undefined
-                      );
-                    }}
-                  >
-                    {item.title}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            ))}
-          </CommandList>
-        </CommandDialog>
+        <FormPreview form={formState} />
       </div>
-      <FormPreview form={formState} />
     </div>
   );
 };

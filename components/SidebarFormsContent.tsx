@@ -22,17 +22,17 @@ export const SidebarFormsContent = ({
   forms: Awaited<ReturnType<typeof getUserForms>>;
 }) => {
   const path = usePathname();
-  const { currentTitle } = useContext(formContext);
+  const { currentTitle, currentPrivacy } = useContext(formContext);
   const id = Number(path.split("/").pop());
   const router = useRouter();
   const [forms, setForms] = useState(originalForms);
   const [publicForms, privateForms] = forms.reduce(
     (acc, form) => {
-      if (form.isPublic) {
-        acc[0].push(form);
-      } else {
-        acc[1].push(form);
-      }
+      acc[
+        currentPrivacy !== null
+          ? Number(currentPrivacy)
+          : Number(!form.isPublic)
+      ].push(form);
       return acc;
     },
     [[], []] as [typeof forms, typeof forms]

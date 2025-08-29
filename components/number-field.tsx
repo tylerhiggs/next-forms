@@ -27,6 +27,14 @@ export const NumberField = ({
       setErrorMessage("Please enter a valid number");
       return;
     }
+    if (field.min !== null && num < field.min) {
+      setErrorMessage(`Value must be at least ${field.min}`);
+      return;
+    }
+    if (field.max !== null && num > field.max) {
+      setErrorMessage(`Value must be at most ${field.max}`);
+      return;
+    }
     setErrorMessage("");
     onChange?.(num);
   };
@@ -42,7 +50,7 @@ export const NumberField = ({
         onInput={change}
         placeholder={field.placeholder || ""}
         aria-invalid={
-          !!errorMessage || (field.required && touched && value === "")
+          !!errorMessage || (!!field.required && touched && value === "")
         }
         required={field.required || false}
         min={field.min === null ? undefined : field.min}

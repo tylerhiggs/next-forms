@@ -16,7 +16,7 @@ export const FormPreview = ({
       <div className="flex flex-col gap-4">
         {form.formFields.map((field) => (
           <div key={field.id}>
-            {field.type === "text" && (
+            {(field.type === "text" || field.type === "email") && (
               <FormTextField key={field.id} field={field} />
             )}
             {field.type === "number" && (
