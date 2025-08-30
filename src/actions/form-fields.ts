@@ -77,24 +77,16 @@ export const updateFormFields = async (
     redirect("/auth/signin");
   }
 
-  const updatedFields = await db.transaction(async (tx) => {
-    const results = [];
-    for (const field of fields) {
-      const updatedField = await tx
+  return Promise.all(
+    fields.map(async (field) => {
+      const { id, ...update } = field;
+      await db
         .update(formField)
-        .set(field)
-        .where(
-          and(eq(formField.id, field.id), eq(formField.userId, session.user.id))
-        )
+        .set(update)
+        .where(and(eq(formField.id, id), eq(formField.userId, session.user.id)))
         .returning();
-      if (updatedField[0]) {
-        results.push(updatedField[0]);
-      }
-    }
-    return results;
-  });
-
-  return updatedFields;
+    })
+  );
 };
 
 export const deleteField = async (fieldId: number) => {

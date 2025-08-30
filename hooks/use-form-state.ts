@@ -1,7 +1,11 @@
 import { FormType, type FormWithFields } from "@/types/forms";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { formField } from "../src/db/schema";
-import { createFormField, updateFormFields } from "@/src/actions/form-fields";
+import {
+  createFormField,
+  deleteField,
+  updateFormFields,
+} from "@/src/actions/form-fields";
 import { toast } from "sonner";
 import { updateForm } from "@/src/actions/forms";
 
@@ -44,31 +48,31 @@ export const useFormState = (originalForm: FormWithFields, debounce = 2000) => {
    * * `idMapping[ID] === -1`: DB ID has not yet been received.
    * * Else: DB ID has been received and is different from local ID.
    */
-  const idMapping = useMemo(() => new Map<number, number>(), []);
+  const idMappingRef = useRef<Map<number, number>>(new Map());
 
   const addFormField = async ({
     id,
     ...field
   }: typeof formField.$inferSelect) => {
-    idMapping.set(id, -1);
+    idMappingRef.current.set(id, -1);
     setFormState((prev) => ({
       ...prev,
       formFields: [...prev.formFields, { ...field, id }],
     }));
     const dbGeneratedId = (await createFormField(originalForm.id, field)).id;
-    idMapping.set(id, dbGeneratedId);
+    idMappingRef.current.set(id, dbGeneratedId);
   };
 
-  const deleteField = async (id: number) => {
+  const removeFieldById = async (id: number) => {
     setFieldUpdates((prev) => prev.filter((update) => update.id !== id));
     setFormState((prev) => ({
       ...prev,
       formFields: prev.formFields.filter((field) => field.id !== id),
     }));
-    const dbId = idMapping.get(id) ?? id;
+    const dbId = idMappingRef.current.get(id) ?? id;
     if (dbId === -1) {
       // retry: field not yet fully created in DB
-      setTimeout(() => deleteField(id), 1000);
+      setTimeout(() => removeFieldById(id), debounce);
       return;
     }
     await deleteField(dbId);
@@ -78,7 +82,15 @@ export const useFormState = (originalForm: FormWithFields, debounce = 2000) => {
     id: number,
     updates: Partial<typeof formField.$inferInsert>
   ) => {
-    setFieldUpdates((prev) => [...prev, { id, ...updates }]);
+    if (fieldUpdates.filter((update) => update.id === id).length) {
+      setFieldUpdates((prev) =>
+        prev.map((update) =>
+          update.id === id ? { ...update, ...updates } : update
+        )
+      );
+    } else {
+      setFieldUpdates((prev) => [...prev, { id, ...updates }]);
+    }
     setFormState((prev) => ({
       ...prev,
       formFields: prev.formFields.map((field) =>
@@ -94,11 +106,13 @@ export const useFormState = (originalForm: FormWithFields, debounce = 2000) => {
       const currentFormUpdates = formUpdatesRef.current;
 
       const fieldUpdatesToApply = currentFieldUpdates
-        .filter((update) => idMapping.get(update.id) !== -1)
+        .filter((update) => idMappingRef.current.get(update.id) !== -1)
         .map((update) => ({
           ...update,
-          id: idMapping.get(update.id) ?? update.id,
+          id: idMappingRef.current.get(update.id) ?? update.id,
         }));
+      console.log("Applying field updates:", fieldUpdatesToApply);
+      console.log("Current form updates:", currentFormUpdates);
       await Promise.all([
         fieldUpdatesToApply.length
           ? updateFormFields(fieldUpdatesToApply)
@@ -118,7 +132,7 @@ export const useFormState = (originalForm: FormWithFields, debounce = 2000) => {
         }, debounce);
       }
       setFieldUpdates((prev) =>
-        prev.filter((update) => idMapping.get(update.id) === -1)
+        prev.filter((update) => idMappingRef.current.get(update.id) === -1)
       );
       setFormUpdates(null);
     } catch (error) {
@@ -141,8 +155,8 @@ export const useFormState = (originalForm: FormWithFields, debounce = 2000) => {
     addFormField,
     updateFormField,
     updateFormState,
-    deleteField,
-    saveNow: scheduleUpdate,
+    deleteField: removeFieldById,
+    saveNow: executeUpdates,
     isSaved: fieldUpdates.length === 0 && formUpdates === null,
   };
 };

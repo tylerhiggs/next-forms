@@ -18,7 +18,9 @@ export const EditTextField = ({
     <div className="border rounded-lg p-4 grid grid-cols-1 gap-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">
-          {field.type === "email" ? "Email Field" : "Text Field"}
+          {field.type === "email" && "Email Field"}
+          {field.type === "text" && "Text Field"}
+          {field.type === "textarea" && "Text Area Field"}
         </h3>
         <div className="flex items-center gap-2">
           <Toggle

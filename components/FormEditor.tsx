@@ -31,6 +31,7 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
     deleteField,
     addFormField,
     isSaved,
+    saveNow,
   } = useFormState(form);
 
   useEffect(() => {
@@ -52,14 +53,19 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "e" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === "/" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setCommandOpen((open) => !open);
+      }
+      if (e.key === "s" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        saveNow();
+        console.log("Saving form...");
       }
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, []);
+  }, [saveNow]);
 
   const groups: {
     name: string;
@@ -84,7 +90,7 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
     return <div>Form not found</div>;
   }
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col min-h-full">
       <EditFormHeader
         isSaved={isSaved}
         isPrivate={!formState.isPublic}
@@ -93,7 +99,7 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
           setCurrentPrivacy(!currentPrivacy);
         }}
       />
-      <div className="w-full flex gap-4">
+      <div className="w-full flex gap-4 min-h-full">
         <div className="flex flex-col pl-4 gap-4 w-1/2">
           <div className="flex items-center p-4">
             <h1 className="w-full">
@@ -106,7 +112,9 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
           </div>
           {formState?.formFields?.map((field) => (
             <div key={field.id}>
-              {(field.type === "text" || field.type === "email") && (
+              {(field.type === "text" ||
+                field.type === "email" ||
+                field.type === "textarea") && (
                 <EditTextField
                   field={field}
                   deleteField={() => deleteField(field.id)}
@@ -139,7 +147,7 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
               </TooltipTrigger>
               <TooltipContent side="bottom" align="center">
                 <span>
-                  Use <Kbd keyName="meta" /> <Kbd keyName="E" /> to open/close
+                  Use <Kbd keyName="meta" /> <Kbd keyName="/" /> to open/close
                 </span>
               </TooltipContent>
             </Tooltip>
@@ -179,7 +187,9 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
             </CommandList>
           </CommandDialog>
         </div>
-        <FormPreview form={formState} />
+        <div className="w-1/2">
+          <FormPreview form={formState} />
+        </div>
       </div>
     </div>
   );

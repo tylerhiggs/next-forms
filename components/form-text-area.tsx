@@ -2,10 +2,10 @@
 
 import type { FormFieldType } from "@/types/forms";
 import { Label } from "./ui/label";
-import { Input } from "./ui/input";
 import { useState } from "react";
+import { Textarea } from "./ui/textarea";
 
-export const FormTextField = ({
+export const FormTextArea = ({
   field,
   onChange,
 }: {
@@ -15,18 +15,10 @@ export const FormTextField = ({
   const [value, setValue] = useState(field.defaultValue || "");
   const [touched, setTouched] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const change = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const change = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
     if (field.required && !e.target.value) {
       setErrorMessage("This field is required");
-      return;
-    }
-    if (
-      field.type === "email" &&
-      e.target.value !== "" &&
-      !/\S+@\S+\.\S+/.test(e.target.value)
-    ) {
-      setErrorMessage("Please enter a valid email address");
       return;
     }
     setErrorMessage("");
@@ -35,16 +27,17 @@ export const FormTextField = ({
   return (
     <div className="p-4 flex flex-col gap-2">
       <Label htmlFor={`${field.id}`}>{field.label}</Label>
-      <Input
+      <Textarea
         id={`${field.id}`}
         value={value}
-        type={field.type === "email" ? "email" : "text"}
-        autoComplete={field.type === "email" ? "email" : "off"}
-        name={`${field.type === "email" ? "email" : "text"}`}
         onFocus={() => setTouched(true)}
         onChange={change}
         placeholder={field.placeholder || ""}
         aria-invalid={!!errorMessage}
+        className="resize-none field-sizing-content overflow-visible"
+        style={
+          { resize: "none", "field-sizing": "content" } as React.CSSProperties
+        }
       />
       {touched && errorMessage && (
         <em className="text-destructive italic">{errorMessage}</em>
