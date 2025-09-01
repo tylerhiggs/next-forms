@@ -21,6 +21,7 @@ export const EditTextField = ({
           {field.type === "email" && "Email Field"}
           {field.type === "text" && "Text Field"}
           {field.type === "textarea" && "Text Area Field"}
+          {field.type === "address" && "Address Field"}
         </h3>
         <div className="flex items-center gap-2">
           <Toggle
@@ -39,41 +40,45 @@ export const EditTextField = ({
           </Button>
         </div>
       </div>
-      <div className="flex flex-col gap-2 w-full">
-        <Label htmlFor={`question-${field.id}`}>Question</Label>
+      {field.type !== "address" && (
+        <>
+          <div className="flex flex-col gap-2 w-full">
+            <Label htmlFor={`question-${field.id}`}>Question</Label>
 
-        <Input
-          id={`question-${field.id}`}
-          value={field.label}
-          onChange={(e) => updateField({ label: e.target.value })}
-          placeholder="Question or label for text input"
-          className="w-full"
-        />
-      </div>
-      <div className="flex gap-1">
-        <div className="flex flex-col gap-2 w-full">
-          <Label htmlFor={`default-value-${field.id}`}>Default Value</Label>
+            <Input
+              id={`question-${field.id}`}
+              value={field.label}
+              onChange={(e) => updateField({ label: e.target.value })}
+              placeholder="Question or label for text input"
+              className="w-full"
+            />
+          </div>
+          <div className="flex gap-1">
+            <div className="flex flex-col gap-2 w-full">
+              <Label htmlFor={`default-value-${field.id}`}>Default Value</Label>
 
-          <Input
-            id={`default-value-${field.id}`}
-            value={field.defaultValue || ""}
-            onChange={(e) => updateField({ defaultValue: e.target.value })}
-            placeholder="Default value for text input"
-            className="w-full"
-          />
-        </div>
-        <div className="flex flex-col gap-2 w-full">
-          <Label htmlFor={`placeholder-${field.id}`}>Placeholder</Label>
+              <Input
+                id={`default-value-${field.id}`}
+                value={field.defaultValue || ""}
+                onChange={(e) => updateField({ defaultValue: e.target.value })}
+                placeholder="Default value for text input"
+                className="w-full"
+              />
+            </div>
+            <div className="flex flex-col gap-2 w-full">
+              <Label htmlFor={`placeholder-${field.id}`}>Placeholder</Label>
 
-          <Input
-            id={`placeholder-${field.id}`}
-            value={field.placeholder || ""}
-            onChange={(e) => updateField({ placeholder: e.target.value })}
-            placeholder="Placeholder for text input"
-            className="w-full"
-          />
-        </div>
-      </div>
+              <Input
+                id={`placeholder-${field.id}`}
+                value={field.placeholder || ""}
+                onChange={(e) => updateField({ placeholder: e.target.value })}
+                placeholder="Placeholder for text input"
+                className="w-full"
+              />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

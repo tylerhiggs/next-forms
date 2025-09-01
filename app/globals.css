@@ -121,6 +121,10 @@
   }
 }
 
+textarea {
+  field-sizing: content;
+}
+
 /* Styles for google sign-in button, DO NOT TOUCH
 Styles are required by Google */
 

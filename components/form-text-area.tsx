@@ -36,7 +36,7 @@ export const FormTextArea = ({
         aria-invalid={!!errorMessage}
         className="resize-none field-sizing-content overflow-visible"
         style={
-          { resize: "none", "field-sizing": "content" } as React.CSSProperties
+          { resize: "none", fieldSizing: "content" } as React.CSSProperties
         }
       />
       {touched && errorMessage && (

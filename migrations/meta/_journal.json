@@ -36,6 +36,13 @@
       "when": 1756408089027,
       "tag": "0004_tough_cerebro",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1756597144927,
+      "tag": "0005_magical_stephen_strange",
+      "breakpoints": true
     }
   ]
 }

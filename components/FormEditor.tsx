@@ -78,6 +78,7 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
         { title: "Text Area", type: "textarea" },
         { title: "Email", type: "email" },
         { title: "Number", type: "number" },
+        { title: "Address", type: "address" },
         { title: "Checkbox", type: "checkbox" },
         { title: "Radio", type: "radio" },
         { title: "Select", type: "select" },
@@ -114,7 +115,8 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
             <div key={field.id}>
               {(field.type === "text" ||
                 field.type === "email" ||
-                field.type === "textarea") && (
+                field.type === "textarea" ||
+                field.type === "address") && (
                 <EditTextField
                   field={field}
                   deleteField={() => deleteField(field.id)}

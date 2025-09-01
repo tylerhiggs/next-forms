@@ -113,6 +113,7 @@ export const fieldTypeEnum = pgEnum("field_type", [
   "text",
   "email",
   "number",
+  "address",
   "select",
   "textarea",
   "checkbox",

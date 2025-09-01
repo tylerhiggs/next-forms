@@ -2,6 +2,7 @@ import { getFormById } from "@/src/actions/forms";
 import { FormTextField } from "./form-text-field";
 import { NumberField } from "./number-field";
 import { FormTextArea } from "./form-text-area";
+import { FormAddress } from "./form-address";
 
 export const FormPreview = ({
   form,
@@ -25,6 +26,9 @@ export const FormPreview = ({
             )}
             {field.type === "textarea" && (
               <FormTextArea key={field.id} field={field} />
+            )}
+            {field.type === "address" && (
+              <FormAddress key={field.id} field={field} />
             )}
           </div>
         ))}
