@@ -14,11 +14,14 @@ export const FormPreview = ({
   }
   return (
     <div className="min-h-full flex flex-col border-l w-full p-4">
-      <h2 className="text-2xl font-bold">Form Preview</h2>
+      <h2 className="text-2xl font-bold">Preview: {form.title}</h2>
       <form className="flex flex-col gap-2 w-full">
         {form.formFields.map((field) => (
           <div key={field.id}>
-            {(field.type === "text" || field.type === "email") && (
+            {(field.type.startsWith("text-") ||
+              field.type === "text" ||
+              field.type === "email" ||
+              field.type === "phone") && (
               <FormTextField key={field.id} field={field} />
             )}
             {field.type === "number" && (
@@ -27,7 +30,7 @@ export const FormPreview = ({
             {field.type === "textarea" && (
               <FormTextArea key={field.id} field={field} />
             )}
-            {field.type === "address" && (
+            {field.type.startsWith("address") && (
               <FormAddress key={field.id} field={field} />
             )}
           </div>

@@ -77,6 +77,7 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
         { title: "Text", type: "text" },
         { title: "Text Area", type: "textarea" },
         { title: "Email", type: "email" },
+        { title: "Phone", type: "phone" },
         { title: "Number", type: "number" },
         { title: "Address", type: "address" },
         { title: "Checkbox", type: "checkbox" },
@@ -100,8 +101,8 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
           setCurrentPrivacy(!currentPrivacy);
         }}
       />
-      <div className="w-full flex gap-4 min-h-full">
-        <div className="flex flex-col pl-4 gap-4 w-1/2">
+      <div className="w-full grid grid-cols-2 gap-4 h-screen">
+        <div className="flex flex-col pl-4 gap-4 w-full flex-1 min-h-0 overflow-y-auto">
           <div className="flex items-center p-4">
             <h1 className="w-full">
               <input
@@ -113,10 +114,11 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
           </div>
           {formState?.formFields?.map((field) => (
             <div key={field.id}>
-              {(field.type === "text" ||
+              {(field.type.startsWith("text") ||
                 field.type === "email" ||
                 field.type === "textarea" ||
-                field.type === "address") && (
+                field.type.startsWith("address") ||
+                field.type === "phone") && (
                 <EditTextField
                   field={field}
                   deleteField={() => deleteField(field.id)}
@@ -167,7 +169,13 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
                         setCommandOpen(false);
                         addFormField({
                           id: Date.now(),
-                          label: "",
+                          label: item.type
+                            .split("-")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                            )
+                            .join(" "),
                           type: item.type,
                           order: formState.formFields.length,
                           required: item.type === "email",
@@ -189,7 +197,7 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
             </CommandList>
           </CommandDialog>
         </div>
-        <div className="w-1/2">
+        <div className="w-full overflow-y-auto">
           <FormPreview form={formState} />
         </div>
       </div>

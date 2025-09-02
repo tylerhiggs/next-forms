@@ -32,15 +32,45 @@ export const FormTextField = ({
     setErrorMessage("");
     onChange?.(e.target.value);
   };
+  const type = () => {
+    if (field.type === "email") {
+      return "email";
+    }
+    if (field.type === "phone") {
+      return "tel";
+    }
+    return "text";
+  };
+  const autoComplete = () => {
+    if (field.type === "email") {
+      return "email";
+    }
+    if (field.type === "phone") {
+      return "tel";
+    }
+    if (field.type === "text-firstname") {
+      return "given-name";
+    }
+    if (field.type === "text-lastname") {
+      return "family-name";
+    }
+    if (field.type === "text-middlename") {
+      return "additional-name";
+    }
+    if (field.type === "text-name") {
+      return "name";
+    }
+    return "off";
+  };
   return (
     <div className="p-4 flex flex-col gap-2">
       <Label htmlFor={`${field.id}`}>{field.label}</Label>
       <Input
         id={`${field.id}`}
         value={value}
-        type={field.type === "email" ? "email" : "text"}
-        autoComplete={field.type === "email" ? "email" : "off"}
-        name={`${field.type === "email" ? "email" : "text"}`}
+        type={type()}
+        autoComplete={autoComplete()}
+        name={type()}
         onFocus={() => setTouched(true)}
         onChange={change}
         placeholder={field.placeholder || ""}

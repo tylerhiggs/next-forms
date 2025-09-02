@@ -111,9 +111,16 @@ export const formRelations = relations(form, ({ many }) => ({
 
 export const fieldTypeEnum = pgEnum("field_type", [
   "text",
+  "text-name",
+  "text-firstname",
+  "text-lastname",
+  "text-middlename",
   "email",
   "number",
+  "phone",
   "address",
+  "address-billing",
+  "address-shipping",
   "select",
   "textarea",
   "checkbox",
