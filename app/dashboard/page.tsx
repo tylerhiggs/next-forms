@@ -1,19 +1,13 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/DashSidebar";
-import { cookies } from "next/headers";
 
 export default async function Dashboard() {
-  const cookieStore = cookies();
-  const defaultOpen =
-    (await cookieStore).get("sidebar_state")?.value === "true";
-
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
+    <SidebarProvider defaultOpen={true}>
       <DashboardSidebar />
-      <main>
-        <SidebarTrigger />
+      <main className="w-full">
         <div className="flex w-full min-h-full items-center justify-center">
-          <h1 className="text-2xl font-bold">Select a Form</h1>
+          <h1 className="text-2xl font-bold">No form selected</h1>
         </div>
       </main>
     </SidebarProvider>

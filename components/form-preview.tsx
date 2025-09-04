@@ -3,6 +3,7 @@ import { FormTextField } from "./form-text-field";
 import { NumberField } from "./number-field";
 import { FormTextArea } from "./form-text-area";
 import { FormAddress } from "./form-address";
+import { FormSelectField } from "./form-select-field";
 
 export const FormPreview = ({
   form,
@@ -32,6 +33,9 @@ export const FormPreview = ({
             )}
             {field.type.startsWith("address") && (
               <FormAddress key={field.id} field={field} />
+            )}
+            {field.type === "select" && (
+              <FormSelectField key={field.id} field={field} />
             )}
           </div>
         ))}

@@ -20,6 +20,7 @@ import { EditNumberField } from "./edit-number-field";
 import type { FormWithFields } from "@/types/forms";
 import { useFormState } from "@/hooks/use-form-state";
 import { EditFormHeader } from "./edit-form-header";
+import { EditSelectField } from "./edit-select-field";
 
 export const FormEditor = ({ form }: { form: FormWithFields }) => {
   const { currentTitle, setCurrentTitle, currentPrivacy, setCurrentPrivacy } =
@@ -92,7 +93,7 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
     return <div>Form not found</div>;
   }
   return (
-    <div className="w-full flex flex-col min-h-full">
+    <div className="w-full flex flex-col min-h-full relative">
       <EditFormHeader
         isSaved={isSaved}
         isPrivate={!formState.isPublic}
@@ -100,9 +101,10 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
           updateFormState({ isPublic: !formState.isPublic });
           setCurrentPrivacy(!currentPrivacy);
         }}
+        formId={form.id}
       />
       <div className="w-full grid grid-cols-2 gap-4 h-screen">
-        <div className="flex flex-col pl-4 gap-4 w-full flex-1 min-h-0 overflow-y-auto">
+        <div className="flex flex-col pl-4 gap-4 w-full flex-1 min-h-0 max-h-full overflow-y-auto">
           <div className="flex items-center p-4">
             <h1 className="w-full">
               <input
@@ -129,6 +131,15 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
               )}
               {field.type === "number" && (
                 <EditNumberField
+                  field={field}
+                  updateField={(updatedField) =>
+                    updateFormField(field.id, updatedField)
+                  }
+                  deleteField={() => deleteField(field.id)}
+                />
+              )}
+              {field.type === "select" && (
+                <EditSelectField
                   field={field}
                   updateField={(updatedField) =>
                     updateFormField(field.id, updatedField)
@@ -181,7 +192,13 @@ export const FormEditor = ({ form }: { form: FormWithFields }) => {
                           required: item.type === "email",
                           userId: formState.userId,
                           formId: formState.id,
-                          options: null,
+                          options:
+                            item.type === "select"
+                              ? JSON.stringify({
+                                  options: ["Option 1", "Option 2"],
+                                })
+                              : null,
+                          selectMultiple: false,
                           placeholder: "",
                           defaultValue: "",
                           min: null,

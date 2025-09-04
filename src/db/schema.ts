@@ -140,6 +140,7 @@ export const formField = pgTable("form_field", {
   type: fieldTypeEnum("type").notNull(),
   required: boolean("required").default(false),
   options: text("options"), // JSON string for select/radio options
+  selectMultiple: boolean("select_multiple").default(false),
   order: integer("order").notNull(),
   placeholder: text("placeholder"),
   defaultValue: text("default_value"),

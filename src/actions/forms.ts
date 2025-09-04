@@ -59,6 +59,19 @@ export const getFormById = async (formId: number) => {
   return userForm;
 };
 
+export const getPublicFormById = async (formId: number) => {
+  const publicForm = await db.query.form.findFirst({
+    where: and(eq(form.id, formId), eq(form.isPublic, true)),
+    with: {
+      formFields: {
+        orderBy: (field) => asc(field.order),
+      },
+    },
+  });
+
+  return publicForm;
+};
+
 export const updateForm = async (
   formId: number,
   updates: Partial<Omit<typeof form.$inferInsert, "userId" | "createdAt">>

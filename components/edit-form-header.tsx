@@ -1,14 +1,17 @@
 import { Check } from "lucide-react";
 import { Toggle } from "./ui/toggle";
+import { Button } from "./ui/button";
 
 export const EditFormHeader = ({
   isSaved,
   isPrivate,
   onPrivacyToggle,
+  formId,
 }: {
   isSaved: boolean;
   isPrivate: boolean;
   onPrivacyToggle: () => void;
+  formId: number;
 }) => {
   return (
     <header className="flex items-center gap-4 justify-end">
@@ -28,6 +31,11 @@ export const EditFormHeader = ({
       >
         <span>{isPrivate ? "Private" : "Public"}</span>
       </Toggle>
+      {!isPrivate && (
+        <Button href={`/public/${formId}`} variant="ghost">
+          View Form
+        </Button>
+      )}
     </header>
   );
 };

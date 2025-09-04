@@ -4,6 +4,7 @@ import { DashboardSidebar } from "@/components/DashSidebar";
 import { cookies } from "next/headers";
 import { FormEditor } from "@/components/FormEditor";
 import { FormProvider } from "@/app/providers/form-provider";
+import { toast } from "sonner";
 export default async function FormEditorPage({
   params,
 }: {
@@ -14,10 +15,12 @@ export default async function FormEditorPage({
     return <div>Form ID is required</div>;
   }
   if (isNaN(Number(id))) {
+    toast.error("Invalid Form ID", { duration: 10000 });
     return <div>Invalid Form ID</div>;
   }
   const form = await getFormById(Number(id));
   if (!form) {
+    toast.error("Form not found", { duration: 10000 });
     return <div>Form not found</div>;
   }
   const cookieStore = cookies();
